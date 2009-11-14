@@ -37,9 +37,14 @@ public class MapPanel extends JPanel {
 	public List<PointData> points;
 
 	/**
-	 * 線データの一覧
+	 * 鉄道データの一覧
 	 */
-	public List<LineData> lines;
+	public List<LineData> railways;
+
+	/**
+	 * 道路データの一覧
+	 */
+	public List<LineData> roads;
 
 	/**
 	 * GPSログに含まれる点データの一覧
@@ -71,7 +76,8 @@ public class MapPanel extends JPanel {
 	 */
 	public MapPanel() {
 		this.points = new CopyOnWriteArrayList<PointData>();
-		this.lines = new CopyOnWriteArrayList<LineData>();
+		this.railways = new CopyOnWriteArrayList<LineData>();
+		this.roads = new CopyOnWriteArrayList<LineData>();
 		this.gpsPoints = new CopyOnWriteArrayList<PointData>();
 		this.addMouseListener(new MouseAdapter() {
 			@Override
@@ -129,15 +135,41 @@ public class MapPanel extends JPanel {
 		g.setFont(new Font("メイリオ", Font.PLAIN, 16));
 		double radius = 3;
 		TreeMap<Double, Point2D> fixedPoints = new TreeMap<Double, Point2D>();
+		// 一般道路
+		int principalPrefectualRoadWidth = (int) Math.max(1, 4 * this.zoom);
+		int nationalRoadWidth = (int) Math.max(2, 6 * this.zoom);
+		for (LineData line : this.roads) {
+			Path2D path = toPath(line);
+			if (path == null
+					|| !path.intersects(-principalPrefectualRoadWidth, -principalPrefectualRoadWidth, getWidth()
+							+ principalPrefectualRoadWidth * 2, getHeight() + principalPrefectualRoadWidth * 2)) {
+				continue;
+			}
+			switch (line.roadTypeCode) {
+			case NATIONAL_ROAD:
+				g.setStroke(new BasicStroke(nationalRoadWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+				g.setColor(Color.ORANGE);
+				g.draw(path);
+				break;
+			case PRINCIPAL_PREFECTUAL_ROAD:
+				g
+						.setStroke(new BasicStroke(principalPrefectualRoadWidth, BasicStroke.CAP_ROUND,
+								BasicStroke.JOIN_ROUND));
+				g.setColor(Color.YELLOW);
+				g.draw(path);
+				break;
+			default:
+			}
+		}
 		// 鉄道
 		g.setColor(Color.WHITE);
 		Collection<LineData> stations = new ArrayList<LineData>();
-		int stationWidth = (int) Math.max(4, 30 * this.zoom);
-		int jrWidth = (int) Math.max(2, 10 * this.zoom);
+		int stationWidth = (int) Math.max(4, 20 * this.zoom);
+		int jrWidth = (int) Math.max(2, 8 * this.zoom);
 		int privateRailwayWidth = (int) Math.max(2, 6 * this.zoom);
 		int lineWidthTwice = (int) Math.max(3, 3 * this.zoom);
 		float jrDash = (float) Math.max(6, 50 * this.zoom);
-		for (LineData line : this.lines) {
+		for (LineData line : this.railways) {
 			Path2D path = toPath(line);
 			if (path == null
 					|| !path.intersects(-stationWidth, -stationWidth, getWidth() + stationWidth * 2, getHeight()
@@ -177,6 +209,21 @@ public class MapPanel extends JPanel {
 			g.setColor(Color.BLACK);
 			g.setStroke(new BasicStroke(stationWidth, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND));
 			g.draw(path);
+		}
+		// 高速道路
+		int highwayWidth = (int) Math.max(3, 8 * this.zoom);
+		g.setStroke(new BasicStroke(highwayWidth, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+		for (LineData line : this.roads) {
+			if (line.roadTypeCode == Const.RoadTypeCode.HIGHWAY) {
+				Path2D path = toPath(line);
+				if (path == null
+						|| !path.intersects(-principalPrefectualRoadWidth, -principalPrefectualRoadWidth, getWidth()
+								+ principalPrefectualRoadWidth * 2, getHeight() + principalPrefectualRoadWidth * 2)) {
+					continue;
+				}
+				g.setColor(Color.GREEN);
+				g.draw(path);
+			}
 		}
 		// 駅名
 		for (LineData line : stations) {

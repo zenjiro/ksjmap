@@ -1,5 +1,5 @@
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 線データに対応するクラスです。
@@ -38,15 +38,20 @@ public class LineData {
 	public String stationName;
 
 	/**
+	 * 道路種別コード
+	 */
+	public Const.RoadTypeCode roadTypeCode;
+	
+	/**
 	 * 線データを初期化します。
 	 */
 	public LineData() {
-		this.points = new CopyOnWriteArrayList<PointData>();
+		this.points = new ArrayList<PointData>();
 	}
 
 	@Override
 	public String toString() {
 		return "(" + this.railwayClassCode + ", " + this.institutionTypeCode + ", " + this.lineName + ", "
-				+ this.company + ", " + this.stationName + ")" + this.points.toString();
+				+ this.company + ", " + this.stationName + ", " + this.label + ", " + this.roadTypeCode + ")" + this.points.toString();
 	}
 }

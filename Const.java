@@ -490,4 +490,39 @@ public class Const {
 		 */
 		THIRD_SECTOR,
 	}
+
+	/**
+	 * 道路種別コード
+	 */
+	public static enum RoadTypeCode {
+		/**
+		 * 高速道路
+		 */
+		HIGHWAY,
+		/**
+		 * 国道
+		 */
+		NATIONAL_ROAD,
+		/**
+		 * 主要地方道
+		 */
+		PRINCIPAL_PREFECTUAL_ROAD;
+
+		/**
+		 * @param type 道路種別コード
+		 * @return 道路種別コードの列挙型
+		 */
+		public static RoadTypeCode get(int type) {
+			switch (type) {
+			case 1:
+				return HIGHWAY;
+			case 2:
+				return NATIONAL_ROAD;
+			case 3:
+				return PRINCIPAL_PREFECTUAL_ROAD;
+			default:
+				return null;
+			}
+		}
+	}
 }

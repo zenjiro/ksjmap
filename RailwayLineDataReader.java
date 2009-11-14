@@ -1,8 +1,8 @@
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,7 +44,7 @@ public class RailwayLineDataReader implements LineDataReader {
 
 	@Override
 	public Collection<LineData> read(InputStream in) throws XMLStreamException {
-		Collection<LineData> ret = new CopyOnWriteArrayList<LineData>();
+		Collection<LineData> ret = new ArrayList<LineData>();
 		XMLStreamReader reader = XMLInputFactory.newInstance().createXMLStreamReader(in);
 		Mode mode = Mode.POINT;
 		String id = null;
